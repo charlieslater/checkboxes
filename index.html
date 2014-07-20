@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+  <body>
+    <form method="post" action="/testform">Mood:<br>
+      {% for box in boxes %}
+         <input type="checkbox" name="{{ box }}">{{ box }}<br>
+      {% endfor %}
+      <input type="submit">
+    </form>
+
+    <br>
+  </body>
+</html>
+{% endautoescape %}
