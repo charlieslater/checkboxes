@@ -9,7 +9,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     autoescape=True)
 
 
-boxes = ['happy','sad','excited']
+boxes = [('happy',False),('sad',True),('excited',False)]
 
 class MainPage(webapp2.RequestHandler):
 
@@ -22,7 +22,27 @@ class MainPage(webapp2.RequestHandler):
 
         template = JINJA_ENVIRONMENT.get_template('index.html')
         self.response.write(template.render(template_values))
-# [END main_page]
+
+    def post(self):
+        global boxes
+        new_boxes = []
+        for box in boxes:
+          name, setting = box
+          setting=self.request.get(name) 
+          print "MainPage: post: name = ", name
+          print "MainPage: post: setting = ", setting
+          if setting:
+            box=(name,True)
+          else:
+            box=(name,False)
+          new_boxes.append(box) 
+        boxes = new_boxes
+        print "MainPage: post: new_boxes = ", new_boxes
+        template_values = {
+            'boxes': boxes,
+        }
+        template = JINJA_ENVIRONMENT.get_template('index.html')
+        self.response.write(template.render(template_values))
 
 
 class TestHandler(webapp2.RequestHandler):
@@ -32,7 +52,7 @@ class TestHandler(webapp2.RequestHandler):
         global boxes
         self.response.headers['Content-Type'] = 'text/html'
         for box in boxes:
-          setting=self.request.get(box) 
+          setting=self.request.get(box[0]) 
           if not setting:
             setting='off'
           self.response.out.write("%s = %s<br>" % (box, setting))

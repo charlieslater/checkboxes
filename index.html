@@ -2,9 +2,15 @@
 {% autoescape true %}
 <html>
   <body>
-    <form method="post" action="/testform">Mood:<br>
-      {% for box in boxes %}
+    <form method="post">Mood:<br>
+      {% for box_tuple in boxes %}
+        {% set box = box_tuple[0] %}
+        {% set checked = box_tuple[1] %}
+        {% if checked %}
+         <input type="checkbox" name="{{ box }}" checked>{{ box }}<br>
+        {% else %}
          <input type="checkbox" name="{{ box }}">{{ box }}<br>
+        {% endif %}
       {% endfor %}
       <input type="submit">
     </form>
