@@ -3,9 +3,9 @@
 <html>
   <body>
     <form method="post">Mood:<br>
-      {% for box_tuple in boxes %}
-        {% set box = box_tuple[0] %}
-        {% set checked = box_tuple[1] %}
+      {% for box_line in boxes %}
+        {% set box = box_line.line %}
+        {% set checked = box_line.checked %}
         {% if checked %}
          <input type="checkbox" name="{{ box }}" checked>{{ box }}<br>
         {% else %}

@@ -2,14 +2,19 @@ import os
 import urllib
 import jinja2
 import webapp2
+from google.appengine.ext import ndb
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+class BoxLine(ndb.Model):
+    def __init__(self,line,checked):
+        self.line = line
+        self.checked = checked
 
-boxes = [('happy',False),('sad',True),('excited',False)]
+boxes = [BoxLine('happy',False),BoxLine('sad',True),BoxLine('excited',False)]
 
 class MainPage(webapp2.RequestHandler):
 
@@ -26,16 +31,17 @@ class MainPage(webapp2.RequestHandler):
     def post(self):
         global boxes
         new_boxes = []
+        # each box is an instance of the class BoxLine
         for box in boxes:
-          name, setting = box
-          setting=self.request.get(name) 
-          print "MainPage: post: name = ", name
+          setting=self.request.get(box.line) 
+          print "MainPage: post: name = ", box.line
           print "MainPage: post: setting = ", setting
           if setting:
-            box=(name,True)
+            box.checked = True
           else:
-            box=(name,False)
+            box.checked = False
           new_boxes.append(box) 
+          box.put()
         boxes = new_boxes
         print "MainPage: post: new_boxes = ", new_boxes
         template_values = {

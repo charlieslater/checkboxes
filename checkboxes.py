@@ -34,6 +34,10 @@ class TestHandler(webapp2.RequestHandler):
         self.response.out.write("r = %s<br>" % r)
         s=self.request.get("s") 
         self.response.out.write("s = %s<br>" % s)
+    def get(self):
+        self.response.out.write(form)
+        self.response.headers['Content-Type'] = 'text/html'
+        self.response.out.write(form)
 
 application = webapp2.WSGIApplication([('/', MainPage),
                               ('/testform', TestHandler)],
