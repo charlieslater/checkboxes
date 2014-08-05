@@ -1,23 +1,45 @@
 import webapp2
 
-form = """
+simle_form = """
 <html>
 <form method="post" action="/testform">
-    <input name="q"> <input type="submit">
+    <input name="q"><input type="submit">
 </form>
 </html>
 """
 
 form = """
 <html>
+<style>
+  a { text-decoration:none; }
+</style>
+<body>
 <form method="post" action="/testform">
-    <input type="checkbox" name="q">q<br>
-    <input type="checkbox" name="r" checked>r<br>
+    <input type="checkbox" name="q">q 
+       <a href='/deleteme?q'>
+       <img 
+       src="static/gnome_edit_delete.png" 
+       title="Delete" 
+       alt="Delete Icon" 
+       align="bottom"
+       height="15" 
+       width="12"/>
+       </a><br>
+    <input type="checkbox" name="r" checked>r 
+       <a href='/deleteme?r'>
+       <img 
+       src="static/gnome_edit_delete.png" 
+       title="Delete" 
+       alt="Delete Icon" 
+       align="bottom"
+       height="15" 
+       width="12"/>
+       </a><br>
     <input type="checkbox" name="s">s<br>
     <br>
     <input type="submit">
 </form>
-</html>
+</body></html>
 """
 
 class MainPage(webapp2.RequestHandler):

@@ -5,5 +5,9 @@ api_version: 1
 threadsafe: true
 
 handlers:
+- url: /static/(.*)$
+  static_files: static/\1
+  upload: static/.*$
+
 - url: /.*
   script: checkboxes.application

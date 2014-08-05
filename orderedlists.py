@@ -1,3 +1,7 @@
+#
+# This module gives you examples of how to delete items from a list.
+# 
+#
 import cgi
 import urllib
 
@@ -12,6 +16,9 @@ import webapp2
 # https://docs.python.org/2/library/stdtypes.html#string-formatting
 
 MAIN_PAGE_HEADER_TEMPLATE = """\
+    <style>
+      a { text-decoration:none; }
+    </style>
     <form>List name:
       <input value="%(list_name)s" name="list_name">
       <input type="submit" value="switch">
@@ -27,6 +34,19 @@ MAIN_PAGE_FOOTER_TEMPLATE = """\
     <a href="%(url)s">%(url_name)s</a>
   </body>
 </html>
+"""
+
+ITEM_TEMPLATE = """\
+  <li> %(content)s
+  <a href="/deleteme?urlsafe=%(urlsafe)s&list_name=%(list_name)s">
+  <img 
+  src="static/gnome_edit_delete.png" 
+  title="Delete" 
+  alt="Delete Icon" 
+  align="bottom"
+  height="15" 
+  width="12"/>
+  </a></li>
 """
 
 DEFAULT_LIST_NAME = 'default_list'
@@ -84,6 +104,32 @@ class MainPage(webapp2.RequestHandler):
         self.response.write(MAIN_PAGE_FOOTER_TEMPLATE % {'item': add_item_params,
                              'url': url, 'url_name': url_linktext})
 
+    def write_footer(self):
+        if users.get_current_user():
+            url = users.create_logout_url(self.request.uri)
+            url_linktext = 'Logout'
+        else:
+            url = users.create_login_url(self.request.uri)
+            url_linktext = 'Login'
+
+        # Write the submission form and the footer of the page
+        add_item_params = urllib.urlencode({'list_name': self.list_name})
+        self.response.write(MAIN_PAGE_FOOTER_TEMPLATE % {'item': add_item_params,
+                             'url': url, 'url_name': url_linktext})
+
+    def write_list(self):
+        self.response.write('<ol>')
+        for item in self.items:
+            item.content = item.content.encode('utf-8').strip()
+            print "dir(item) =",dir(item)
+            print "item.key.id() =",item.key.id()
+            self.response.write(
+                ITEM_TEMPLATE % {'content': item.content,
+                                 'urlsafe': item.key.urlsafe(),
+                                 'list_name': self.list_name})
+        self.response.write('</ol>')
+
+
     def post(self):
         self.list_name = self.request.get('list_name',
                                           DEFAULT_LIST_NAME)
@@ -98,7 +144,7 @@ class MainPage(webapp2.RequestHandler):
                 item.key.delete()
         self.items = items_query.fetch(20)
         self.write_header()
-        self.write_form()
+        #self.write_form()
 
     def write_header(self):
         self.response.write('<html><body>')
@@ -113,7 +159,9 @@ class MainPage(webapp2.RequestHandler):
         print "get: orders = ",items_query._Query__orders
         self.items = items_query.fetch(20)
         self.write_header()
-        self.write_form()
+        #self.write_form()
+        self.write_list()
+        self.write_footer()
 
 
 class AddItem(webapp2.RequestHandler):
@@ -132,7 +180,18 @@ class AddItem(webapp2.RequestHandler):
         query_params = {'list_name': list_name}
         self.redirect('/?' + urllib.urlencode(query_params))
 
+class DeleteMe(webapp2.RequestHandler):
+    def get(self):
+        urlsafe = self.request.get('urlsafe')
+        print "DeleteMe:urlsafe =",urlsafe
+        item = ndb.Key(urlsafe=urlsafe).get()
+        item.key.delete()
+        list_name = self.request.get('list_name', DEFAULT_LIST_NAME)
+        print "DeleteMe:list_name =",list_name
+        self.redirect('/?' + urllib.urlencode({'list_name': list_name}))
+
 application = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/add', AddItem),
+    ('/deleteme', DeleteMe),
 ], debug=True)
