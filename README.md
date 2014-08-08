@@ -2,7 +2,7 @@ From parent directory, run:
 
 google_appengine/dev_appserver.py --host 0.0.0.0 checkboxes
 
-there three app.yaml files
+The main app.yaml file is for "Listathon" and uses list.py, but there are 3 other app.yaml files:
 
 app.generated - generated checkboxes 
 app.checkboxes - static html.
